@@ -1,0 +1,27 @@
+{
+  "name": "@cojajs/coja",
+  "description": "",
+  "version": "0.0.1",
+  "keywords": [],
+  "license": "MIT",
+  "author": "Dariush Alipour <drsh.alipour@gmail.com>",
+  "homepage": "https://github.com/cojajs/cojajs#readme",
+	"bugs": {
+		"url": "https://github.com/cojajs/cojajs/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cojajs/cojajs.git"
+	},
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "index.js"
+  ]
+}

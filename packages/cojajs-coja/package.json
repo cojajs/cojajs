@@ -1,11 +1,11 @@
 {
-  "name": "@cojajs/coja",
-  "description": "",
-  "version": "0.0.1",
-  "keywords": [],
-  "license": "MIT",
-  "author": "Dariush Alipour <drsh.alipour@gmail.com>",
-  "homepage": "https://github.com/cojajs/cojajs#readme",
+	"name": "@cojajs/coja",
+	"description": "",
+	"version": "0.0.1",
+	"keywords": [],
+	"license": "MIT",
+	"author": "Dariush Alipour <drsh.alipour@gmail.com>",
+	"homepage": "https://github.com/cojajs/cojajs#readme",
 	"bugs": {
 		"url": "https://github.com/cojajs/cojajs/issues"
 	},
@@ -13,15 +13,23 @@
 		"type": "git",
 		"url": "git+https://github.com/cojajs/cojajs.git"
 	},
+	"files": ["index.js"],
+	"main": "index.js",
 	"private": false,
 	"publishConfig": {
 		"access": "public"
 	},
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "files": [
-    "index.js"
-  ]
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"build": "zoboz build",
+		"test_old": "node --experimental-strip-types --experimental-transform-types --test tests/index.test.ts",
+		"test": "tsx --test tests/index.test.ts"
+	},
+	"devDependencies": {
+		"@cucumber/cucumber": "^11.2.0",
+		"@types/node": "^22.13.10",
+		"@zoboz/core": "^4.1.2",
+		"tsx": "^4.19.3",
+		"typescript": "^5.8.2"
+	}
 }

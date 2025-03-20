@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"target": "es2020",
+		"module": "Node16",
+		"moduleResolution": "node16",
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"skipLibCheck": true
+	}
+}

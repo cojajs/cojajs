@@ -39,3 +39,7 @@ When("the webApp is called", async () => {
 Then("the webApp should return {int}", (expectedWebAppResult: number) => {
 	assert.strictEqual(global.webAppResult, expectedWebAppResult);
 });
+
+Then("the webApp should return {string}", (expectedWebAppResult: string) => {
+	assert.strictEqual(global.webAppResult, expectedWebAppResult);
+});

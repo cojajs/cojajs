@@ -1,10 +1,14 @@
 import type { BffGetter } from "./BffGetter";
 import type { CojaRequest } from "./CojaRequest";
+import { requestContextStorage } from "./getRequestContext";
 
 export class BffRuntime {
 	constructor(private readonly bffGetter: BffGetter) {}
 
-	async executeBffFunction(request: CojaRequest): Promise<unknown> {
+	async executeBffFunction(
+		request: CojaRequest,
+		requestContext: unknown,
+	): Promise<unknown> {
 		const bff: unknown = await this.bffGetter.getBff(request.bffId);
 
 		if (bff === null) {
@@ -20,6 +24,7 @@ export class BffRuntime {
 		}
 
 		let func = bff;
+		let parentObject = null;
 		const pathTaken: string[] = [];
 
 		for (const path of request.path) {
@@ -29,6 +34,7 @@ export class BffRuntime {
 				);
 			}
 
+			parentObject = func;
 			// @ts-expect-error
 			func = func[path];
 			pathTaken.push(path);
@@ -40,6 +46,12 @@ export class BffRuntime {
 			);
 		}
 
-		return func(...request.args);
+		return requestContextStorage.run(requestContext, () => {
+			if (parentObject && "apply" in func) {
+				return func.apply(parentObject, request.args);
+			}
+
+			return func(...request.args);
+		});
 	}
 }

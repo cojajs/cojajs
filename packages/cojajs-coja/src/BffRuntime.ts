@@ -2,12 +2,12 @@ import type { BffGetter } from "./BffGetter";
 import type { CojaRequest } from "./CojaRequest";
 import { requestContextStorage } from "./getRequestContext";
 
-export class BffRuntime {
+export class BffRuntime<RequestContext> {
 	constructor(private readonly bffGetter: BffGetter) {}
 
 	async executeBffFunction(
 		request: CojaRequest,
-		requestContext: unknown,
+		requestContext: RequestContext,
 	): Promise<unknown> {
 		const bff: unknown = await this.bffGetter.getBff(request.bffId);
 

@@ -1,11 +1,10 @@
 import type { BffRuntime } from "./BffRuntime";
 import type { Client } from "./Client";
-import type { Responder } from "./Responder";
 
-export class DirectResponder implements Responder {
+export class SsrResponder<RequestContext> {
 	constructor(
-		private readonly bffRuntime: BffRuntime,
-		private readonly requestContext: unknown,
+		private readonly bffRuntime: BffRuntime<RequestContext>,
+		private readonly requestContext: RequestContext,
 	) {}
 
 	serve(client: Client): () => void {

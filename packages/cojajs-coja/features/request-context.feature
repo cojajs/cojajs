@@ -28,7 +28,7 @@ Feature: Request Context
     And following code is our responder:
       """javascript
       const requestContext = { username: 'world' };
-      global.responder = new global.coja.DirectResponder(global.bffRuntime, requestContext);
+      global.responder = new global.coja.SsrResponder(global.bffRuntime, requestContext);
       global.responder.serve(global.client);
       """
     And following code is our webApp:

@@ -29,7 +29,7 @@ Feature: Minimal Setup
       """
     And following code is our responder:
       """javascript
-      global.responder = new global.coja.DirectResponder(global.bffRuntime);
+      global.responder = new global.coja.SsrResponder(global.bffRuntime, null);
       global.responder.serve(global.client);
       """
     And following code is our webApp:

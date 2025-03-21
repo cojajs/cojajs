@@ -3,11 +3,13 @@ Feature: Request Context
   Scenario: Request Context
     Given following code is our bff:
       """javascript
-      global.bff = {
+      const rpc = {
         greet: () => `hello, ${global.coja.getRequestContext().username}!`
       };
+      
+      global.bff = new global.coja.Bff({ rpc });
       """
-    And following code is our bffRuntime:
+    And following code is our runtime:
       """javascript
       class OurBffGetter {
         getBff(bffId) {
@@ -19,17 +21,16 @@ Feature: Request Context
         }
       }
       
-      global.bffRuntime = new global.coja.BffRuntime(new OurBffGetter());
+      global.runtime = new global.coja.Runtime(new OurBffGetter());
       """
     And following code is our client:
       """javascript
-      global.client = new global.coja.Client('example-bff-id');
-      """
-    And following code is our responder:
-      """javascript
       const requestContext = { username: 'world' };
-      global.responder = new global.coja.SsrResponder(global.bffRuntime, requestContext);
-      global.responder.serve(global.client);
+      global.client = new global.coja.SsrClient({
+        runtime: global.runtime,
+        requestContext: requestContext,
+        bffId: 'example-bff-id'
+      });
       """
     And following code is our webApp:
       """javascript

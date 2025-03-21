@@ -16,15 +16,11 @@ Given("following code is our bff:", (code: string) => {
 	new Function(code)();
 });
 
-Given("following code is our bffRuntime:", (code: string) => {
+Given("following code is our runtime:", (code: string) => {
 	new Function(code)();
 });
 
 Given("following code is our client:", (code: string) => {
-	new Function(code)();
-});
-
-Given("following code is our responder:", (code: string) => {
 	new Function(code)();
 });
 

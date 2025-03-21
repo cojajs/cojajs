@@ -1,16 +1,16 @@
-import { BffRuntime } from "./BffRuntime.js";
-import { Client } from "./Client.js";
-import { SsrResponder } from "./SsrResponder.js";
+import { Bff } from "./Bff.js";
+import { Runtime } from "./Runtime.js";
+import { SsrClient } from "./SsrClient.js";
 import { getRequestContext } from "./getRequestContext.js";
 
-export { BffRuntime } from "./BffRuntime.js";
-export { Client } from "./Client.js";
-export { SsrResponder } from "./SsrResponder.js";
+export { Bff } from "./Bff.js";
+export { Runtime } from "./Runtime.js";
+export { SsrClient } from "./SsrClient.js";
 export { getRequestContext } from "./getRequestContext.js";
 
 export default {
-	BffRuntime,
-	Client,
-	SsrResponder,
+	Bff,
+	Runtime,
+	SsrClient,
 	getRequestContext,
 };

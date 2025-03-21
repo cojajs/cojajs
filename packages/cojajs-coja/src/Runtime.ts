@@ -2,10 +2,10 @@ import type { BffGetter } from "./BffGetter";
 import type { CojaRequest } from "./CojaRequest";
 import { requestContextStorage } from "./getRequestContext";
 
-export class BffRuntime<RequestContext> {
+export class Runtime<RequestContext> {
 	constructor(private readonly bffGetter: BffGetter) {}
 
-	async executeBffFunction(
+	async execute(
 		request: CojaRequest,
 		requestContext: RequestContext,
 	): Promise<unknown> {
@@ -19,11 +19,17 @@ export class BffRuntime<RequestContext> {
 
 		if (typeof bff !== "object") {
 			throw new Error(
-				`[bad-request] Expected object for bffId ${request.bffId}, but got ${typeof bff}.`,
+				`[bad-bff] Expected object for bffId ${request.bffId}, but got ${typeof bff}.`,
 			);
 		}
 
-		let func = bff;
+		if (!("rpc" in bff)) {
+			throw new Error(
+				`[bad-bff] Expected object with rpc property for bffId ${request.bffId}.`,
+			);
+		}
+
+		let func = bff.rpc;
 		let parentObject = null;
 		const pathTaken: string[] = [];
 

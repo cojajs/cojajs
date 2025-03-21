@@ -1,15 +1,15 @@
-Feature: Minimal Setup
+Feature: Minimal SSR Setup
 
-  Scenario: Minimal Setup
+  Scenario: Minimal SSR Setup
     Given following code is our bff:
       """javascript
-      global.bff = {
-        math: {
-          twoPlusTwo: () => 4,
-        },
+      const rpc = {
+        math: { twoPlusTwo: () => 4 },
       };
+      
+      global.bff = new global.coja.Bff({ rpc });
       """
-    And following code is our bffRuntime:
+    And following code is our runtime:
       """javascript
       class OurBffGetter {
         getBff(bffId) {
@@ -21,16 +21,15 @@ Feature: Minimal Setup
         }
       }
       
-      global.bffRuntime = new global.coja.BffRuntime(new OurBffGetter());
+      global.runtime = new global.coja.Runtime(new OurBffGetter());
       """
     And following code is our client:
       """javascript
-      global.client = new global.coja.Client('example-bff-id');
-      """
-    And following code is our responder:
-      """javascript
-      global.responder = new global.coja.SsrResponder(global.bffRuntime, null);
-      global.responder.serve(global.client);
+      global.client = new global.coja.SsrClient({
+        runtime: global.runtime,
+        requestContext: null,
+        bffId: 'example-bff-id'
+      });
       """
     And following code is our webApp:
       """javascript

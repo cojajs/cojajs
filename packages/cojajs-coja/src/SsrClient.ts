@@ -1,24 +1,54 @@
+import type { Bff, GuestNameOf, RpcOf } from "./Bff";
+import type { Client } from "./Client";
 import { CojaRequest } from "./CojaRequest";
 import type { Runtime } from "./Runtime";
+import { createRpcProxy } from "./createRpcProxy";
 
-export class SsrClient<RequestContext> {
+export class SsrClient<BffInstance extends Bff, RequestContext>
+	implements Client<BffInstance>
+{
 	private readonly runtime: Runtime<RequestContext>;
 	private readonly requestContext: RequestContext;
 	private readonly bffId: string;
+	private readonly guestPath: string[];
 
-	constructor(options: {
+	private constructor(options: {
 		runtime: Runtime<RequestContext>;
 		requestContext: RequestContext;
 		bffId: string;
+		guestPath?: string[];
 	}) {
 		this.runtime = options.runtime;
 		this.requestContext = options.requestContext;
 		this.bffId = options.bffId;
+		this.guestPath = options.guestPath ?? [];
 	}
 
-	get rpc() {
-		return createProxy(async (path, args) => {
-			const request = new CojaRequest({ bffId: this.bffId, path, args });
+	static create<BffInstance extends Bff, RequestContext>(options: {
+		runtime: Runtime<RequestContext>;
+		requestContext: RequestContext;
+		bffId: string;
+	}): SsrClient<BffInstance, RequestContext> {
+		return new SsrClient(options);
+	}
+
+	forGuest(guestName: GuestNameOf<BffInstance>): Client<Bff> {
+		return new SsrClient({
+			runtime: this.runtime,
+			requestContext: this.requestContext,
+			bffId: this.bffId,
+			guestPath: [...this.guestPath, guestName],
+		});
+	}
+
+	get rpc(): RpcOf<BffInstance> {
+		return createRpcProxy(async (rpcPath, args) => {
+			const request = new CojaRequest({
+				bffId: this.bffId,
+				guestPath: this.guestPath,
+				rpcPath,
+				args,
+			});
 
 			const bffReturn = await this.runtime.execute(
 				request,
@@ -34,19 +64,6 @@ export class SsrClient<RequestContext> {
 			}
 
 			return bffReturn;
-		});
+		}) as RpcOf<BffInstance>;
 	}
 }
-
-const createProxy = (
-	onApply: (path: string[], args: unknown[]) => unknown,
-	path: string[] = [],
-) =>
-	new Proxy(() => {}, {
-		get(_, prop: string) {
-			return createProxy(onApply, [...path, prop]);
-		},
-		apply(_, __, args) {
-			return onApply(path, args);
-		},
-	});

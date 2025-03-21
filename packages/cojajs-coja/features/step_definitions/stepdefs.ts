@@ -12,6 +12,10 @@ BeforeAll(() => {
 	global.coja = cojaIndex;
 });
 
+Given("we are using a full-stack third-party library:", (code: string) => {
+	new Function(code)();
+});
+
 Given("following code is our bff:", (code: string) => {
 	new Function(code)();
 });

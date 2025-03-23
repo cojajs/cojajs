@@ -1,20 +1,23 @@
-import type { Bff, GuestNameOf, RpcOf } from "./Bff";
+import type {
+	Bff,
+	GuestNameOf,
+	ClientifiedRpcOf,
+	RequestContextTypeOf,
+} from "./Bff";
 import type { Client } from "./Client";
 import { CojaRequest } from "./CojaRequest";
 import type { Runtime } from "./Runtime";
 import { createRpcProxy } from "./createRpcProxy";
 
-export class SsrClient<BffInstance extends Bff, RequestContext>
-	implements Client<BffInstance>
-{
-	private readonly runtime: Runtime<RequestContext>;
-	private readonly requestContext: RequestContext;
+export class SsrClient<BffInstance extends Bff> implements Client<BffInstance> {
+	private readonly runtime: Runtime<RequestContextTypeOf<BffInstance>>;
+	private readonly requestContext: RequestContextTypeOf<BffInstance>;
 	private readonly bffId: string;
 	private readonly guestPath: string[];
 
 	private constructor(options: {
-		runtime: Runtime<RequestContext>;
-		requestContext: RequestContext;
+		runtime: Runtime<RequestContextTypeOf<BffInstance>>;
+		requestContext: RequestContextTypeOf<BffInstance>;
 		bffId: string;
 		guestPath?: string[];
 	}) {
@@ -24,11 +27,11 @@ export class SsrClient<BffInstance extends Bff, RequestContext>
 		this.guestPath = options.guestPath ?? [];
 	}
 
-	static create<BffInstance extends Bff, RequestContext>(options: {
-		runtime: Runtime<RequestContext>;
-		requestContext: RequestContext;
+	static create<BffInstance extends Bff>(options: {
+		runtime: Runtime<RequestContextTypeOf<BffInstance>>;
+		requestContext: RequestContextTypeOf<BffInstance>;
 		bffId: string;
-	}): SsrClient<BffInstance, RequestContext> {
+	}): SsrClient<BffInstance> {
 		return new SsrClient(options);
 	}
 
@@ -37,11 +40,11 @@ export class SsrClient<BffInstance extends Bff, RequestContext>
 			runtime: this.runtime,
 			requestContext: this.requestContext,
 			bffId: this.bffId,
-			guestPath: [...this.guestPath, guestName],
+			guestPath: [...this.guestPath, guestName as string],
 		});
 	}
 
-	get rpc(): RpcOf<BffInstance> {
+	get rpc(): ClientifiedRpcOf<BffInstance> {
 		return createRpcProxy(async (rpcPath, args) => {
 			const request = new CojaRequest({
 				bffId: this.bffId,
@@ -64,6 +67,6 @@ export class SsrClient<BffInstance extends Bff, RequestContext>
 			}
 
 			return bffReturn;
-		}) as RpcOf<BffInstance>;
+		}) as ClientifiedRpcOf<BffInstance>;
 	}
 }

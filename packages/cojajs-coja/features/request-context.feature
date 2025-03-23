@@ -1,40 +1,80 @@
 Feature: Request Context
+  Your BFF functions may need to access information about the current request,
+such as the user's identity or the request's origin.
+Coja provides a `RequestContext` class to help you manage this information.
 
   Scenario: Request Context
-    Given following code is our bff:
-      """javascript
-      const rpc = {
-        greet: () => `hello, ${global.coja.getRequestContext().username}!`
+    Given file "requestContext.ts" reads as:
+      """typescript
+      import { RequestContext } from '@cojajs/coja';
+      
+      type ContextType = {
+        username: string;
       };
       
-      global.bff = new global.coja.Bff({ rpc });
+      export const requestContext = new RequestContext<ContextType>();
       """
-    And following code is our runtime:
-      """javascript
-      class OurBffGetter {
-        getBff(bffId) {
-          if (bffId !== 'example-bff-id') {
-            return null;
-          }
+    And file "bff.ts" reads as:
+      """typescript
+      import { Bff } from '@cojajs/coja';
+      import { requestContext } from './requestContext';
       
-          return global.bff;
+      export default new Bff({
+        rpc: {
+          greet({ greeter }: { greeter: string }) {
+            const { username } = requestContext.useValue();
+            return `"hi", ${greeter} said to ${username}!`;
+          },
+        },
+        requestContext,
+      });
+      """
+    And file "server-only/runtime.ts" reads as:
+      """typescript
+      import { Runtime, type BffFetcher } from '@cojajs/coja';
+      import bff from '../bff';
+      
+      const bffMap = {
+        'example-bff-id': bff,
+      };
+      
+      class OurBffFetcher implements BffFetcher {
+        fetch(bffId) {
+          return bffMap[bffId] ?? null;
         }
       }
       
-      global.runtime = new global.coja.Runtime(new OurBffGetter());
+      export const runtime = new Runtime({ bffFetcher: new OurBffFetcher() });
       """
-    And following code is our client:
-      """javascript
-      const requestContext = { username: 'world' };
-      global.client = new global.coja.SsrClient({
-        runtime: global.runtime,
-        requestContext: requestContext,
+    And file "server-only/ssr-client.ts" reads as:
+      """typescript
+      import { SsrClient } from '@cojajs/coja';
+      import { runtime } from './runtime';
+      import type bff from '../bff';
+      
+      export const ssrClient = SsrClient.create<typeof bff>({
+        runtime,
+        requestContext: { username: 'world' },
         bffId: 'example-bff-id'
       });
       """
-    And following code is our webApp:
-      """javascript
-      global.webApp = () => global.client.rpc.greet();
+    And file "server-only/ssr-index.ts" reads as:
+      """typescript
+      import { ssrClient } from './ssr-client';
+      
+      const SsrApp = async () => {
+        const greeting = await ssrClient.rpc.greet({ greeter: 'the author' });
+        return greeting;
+      }
+      
+      async function main() {
+        console.log(await SsrApp());
+      }
+      
+      main();
       """
-    When the webApp is called
-    Then the webApp should return 'hello, world!'
+    When command "node ./server-only/ssr-index.ts" runs
+    Then stdout from the last command should be:
+      """
+      "hi", the author said to world!
+      """

@@ -1,45 +1,80 @@
-import * as assert from "node:assert";
-import { BeforeAll, Given, Then, When } from "@cucumber/cucumber";
-import cojaIndex from "../../src/index.js";
+import assert from "node:assert";
+import { Before, type DataTable, Given, Then, When } from "@cucumber/cucumber";
+import type { Lab } from "../support/Lab.js";
 
-declare global {
-	var coja: typeof cojaIndex | undefined;
-	var webApp: (() => Promise<unknown>) | undefined;
-	var webAppResult: unknown;
-}
-
-BeforeAll(() => {
-	global.coja = cojaIndex;
+Before(function (this: Lab) {
+	this.initPackage();
 });
 
-Given("we are using a full-stack third-party library:", (code: string) => {
-	new Function(code)();
+Given(
+	"file {string} reads as:",
+	function (this: Lab, filePath: string, fileContent: string) {
+		this.writeFile(filePath, fileContent);
+	},
+);
+
+Given(
+	"package.json sets {string} to {string}",
+	function (this: Lab, key: string, value: string) {
+		this.setInPackageJson(key, value);
+	},
+);
+
+When("command {string} runs", function (this: Lab, command: string) {
+	this.runCommand(command.replace("node ", "ts-node "));
 });
 
-Given("following code is our bff:", (code: string) => {
-	new Function(code)();
-});
+Then(
+	"the following files should exist:",
+	function (this: Lab, filesTable: DataTable) {
+		const files = filesTable.rows().map((x) => x[0]);
+		this.assertFilesExist(files);
+	},
+);
 
-Given("following code is our runtime:", (code: string) => {
-	new Function(code)();
-});
+Then(
+	"file {string} should read as:",
+	function (this: Lab, filePath: string, fileContent: string) {
+		const content = this.readFile(filePath);
+		assert.strictEqual(content.trim(), fileContent.trim());
+	},
+);
 
-Given("following code is our client:", (code: string) => {
-	new Function(code)();
-});
+Then(
+	"file {string} should contain {string}",
+	function (this: Lab, filePath: string, keyword: string) {
+		const content = this.readFile(filePath);
+		if (!content.includes(keyword)) {
+			throw new Error(
+				`keyword {${keyword}} does not exist in file content: """\n${content}"""`,
+			);
+		}
+	},
+);
 
-Given("following code is our webApp:", (code: string) => {
-	new Function(code)();
-});
+Then(
+	"file {string} should not contain {string}",
+	function (this: Lab, filePath: string, keyword: string) {
+		const content = this.readFile(filePath);
+		if (content.includes(keyword)) {
+			throw new Error(
+				`keyword {${keyword}} exists in file content: """\n${content}"""`,
+			);
+		}
+	},
+);
 
-When("the webApp is called", async () => {
-	global.webAppResult = await global.webApp?.();
-});
+Then(
+	"the command should fail with the following output:",
+	function (this: Lab, errorOutput: string) {
+		const stderr = this.getStderr();
+		assert.strictEqual(stderr?.trim(), errorOutput.trim());
+	},
+);
 
-Then("the webApp should return {int}", (expectedWebAppResult: number) => {
-	assert.strictEqual(global.webAppResult, expectedWebAppResult);
-});
-
-Then("the webApp should return {string}", (expectedWebAppResult: string) => {
-	assert.strictEqual(global.webAppResult, expectedWebAppResult);
-});
+Then(
+	"stdout from the last command should be:",
+	function (this: Lab, stdout: string) {
+		assert.strictEqual(this.getStdout()?.trim(), stdout.trim());
+	},
+);

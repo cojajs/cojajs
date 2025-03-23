@@ -13,8 +13,7 @@
 		"type": "git",
 		"url": "git+https://github.com/cojajs/cojajs.git"
 	},
-	"files": ["index.js"],
-	"main": "index.js",
+	"files": ["dist"],
 	"private": false,
 	"publishConfig": {
 		"access": "public"
@@ -22,14 +21,25 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit",
 		"build": "zoboz build",
-		"test_old": "node --experimental-strip-types --experimental-transform-types --test tests/index.test.ts",
-		"test": "tsx --test tests/index.test.ts"
+		"test": "node tests/index.test.mjs"
 	},
 	"devDependencies": {
 		"@cucumber/cucumber": "^11.2.0",
 		"@types/node": "^22.13.10",
+		"@types/tmp": "^0.2.6",
 		"@zoboz/core": "^4.1.2",
-		"tsx": "^4.19.3",
+		"tmp": "^0.2.3",
+		"ts-node": "^10.9.2",
 		"typescript": "^5.8.2"
+	},
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.js",
+	"types": "./dist/dts/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/dts/index.d.ts",
+			"require": "./dist/cjs/index.js",
+			"import": "./dist/esm/index.js"
+		}
 	}
 }

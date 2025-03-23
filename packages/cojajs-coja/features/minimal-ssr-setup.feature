@@ -1,39 +1,62 @@
 Feature: Minimal SSR Setup
 
   Scenario: Minimal SSR Setup
-    Given following code is our bff:
-      """javascript
-      const rpc = {
-        math: { twoPlusTwo: () => 4 },
+    Given file "bff.ts" reads as:
+      """typescript
+      import { Bff } from '@cojajs/coja';
+      
+      export default new Bff({
+        rpc: {
+          math: { twoPlusTwo: () => 4 },
+        },
+      });
+      """
+    And file "server-only/runtime.ts" reads as:
+      """typescript
+      import { Runtime, type BffFetcher } from '@cojajs/coja';
+      import bff from '../bff';
+      
+      const bffMap = {
+        'example-bff-id': bff,
       };
       
-      global.bff = new global.coja.Bff({ rpc });
-      """
-    And following code is our runtime:
-      """javascript
-      class OurBffGetter {
-        getBff(bffId) {
-          if (bffId !== 'example-bff-id') {
-            return null;
-          }
-      
-          return global.bff;
+      class OurBffFetcher implements BffFetcher {
+        fetch(bffId) {
+          return bffMap[bffId] ?? null;
         }
       }
       
-      global.runtime = new global.coja.Runtime(new OurBffGetter());
+      export const runtime = new Runtime({ bffFetcher: new OurBffFetcher() });
       """
-    And following code is our client:
-      """javascript
-      global.client = new global.coja.SsrClient({
-        runtime: global.runtime,
+    And file "server-only/ssr-client.ts" reads as:
+      """typescript
+      import { SsrClient } from '@cojajs/coja';
+      import { runtime } from './runtime';
+      import type bff from '../bff'; 
+      
+      export const ssrClient = SsrClient.create<typeof bff>({
+        runtime,
         requestContext: null,
         bffId: 'example-bff-id'
       });
       """
-    And following code is our webApp:
-      """javascript
-      global.webApp = () => global.client.rpc.math.twoPlusTwo();
+    And file "server-only/ssr-index.ts" reads as:
+      """typescript
+      import { ssrClient } from './ssr-client';
+      
+      const SsrApp = async () => {
+        const twoPlusTwo = await ssrClient.rpc.math.twoPlusTwo();
+        return twoPlusTwo;
+      }
+      
+      async function main() {
+        console.log(await SsrApp());
+      }
+      
+      main();
       """
-    When the webApp is called
-    Then the webApp should return 4
+    When command "node ./server-only/ssr-index.ts" runs
+    Then stdout from the last command should be:
+      """
+      4
+      """

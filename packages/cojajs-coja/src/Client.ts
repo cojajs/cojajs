@@ -1,6 +1,6 @@
-import type { Bff, GuestNameOf, RpcOf } from "./Bff";
+import type { Bff, GuestNameOf, ClientifiedRpcOf } from "./Bff";
 
 export interface Client<BffInstance extends Bff> {
-	rpc: RpcOf<BffInstance>;
+	rpc: ClientifiedRpcOf<BffInstance>;
 	forGuest(guestName: GuestNameOf<BffInstance>): Client<Bff>;
 }

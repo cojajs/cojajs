@@ -1,6 +1,8 @@
 {
 	"default": {
+		"parallel": 2,
 		"import": ["features/**/*.ts"],
+		"loader": ["ts-node/esm"],
 		"formatOptions": {
 			"snippetInterface": "synchronous"
 		}

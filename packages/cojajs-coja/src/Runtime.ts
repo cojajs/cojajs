@@ -1,26 +1,33 @@
 import type { Bff } from "./Bff";
-import type { BffGetter } from "./BffGetter";
+import type { BffFetcher } from "./BffFetcher";
 import type { CojaRequest } from "./CojaRequest";
-import { requestContextStorage } from "./getRequestContext";
 
 export class Runtime<RequestContext> {
-	constructor(private readonly bffGetter: BffGetter) {}
+	private readonly bffFetcher: BffFetcher;
+
+	constructor(options: { bffFetcher: BffFetcher }) {
+		this.bffFetcher = options.bffFetcher;
+	}
 
 	async execute(
 		request: CojaRequest,
-		requestContext: RequestContext,
+		requestContextValue: RequestContext,
 	): Promise<unknown> {
-		let bff = await this.bffGetter.getBff(request.bffId);
-		this.assertBff(request.bffId, bff);
+		const topLevelBff = await this.bffFetcher.fetch(request.bffId);
+		this.assertBff(request.bffId, topLevelBff);
 
-		bff = this.resolveGuestPath(bff, request.guestPath);
-		this.assertBff(this.stringifyGuestPath(request), bff);
+		const requestedBff = this.resolveGuestPath(topLevelBff, request.guestPath);
+		this.assertBff(this.stringifyGuestPath(request), requestedBff);
 
-		const bffFunction = this.getBffFunction(bff, request);
+		const bffFunction = this.getBffFunction(requestedBff, request);
 
-		return requestContextStorage.run(requestContext, () => {
-			return bffFunction(...request.args);
-		});
+		const requestContext = requestedBff.requestContext;
+
+		return requestContext
+			? requestContext.run(requestContextValue, () =>
+					bffFunction(...request.args),
+				)
+			: bffFunction(...request.args);
 	}
 
 	private stringifyGuestPath(request: CojaRequest): string {

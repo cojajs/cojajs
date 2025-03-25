@@ -1,5 +1,5 @@
-import child_process from "node:child_process";
-import process from "node:process";
+import child_process from "child_process";
+import process from "process";
 import { PilotPack } from "./support/PilotPack.mjs";
 
 async function main() {

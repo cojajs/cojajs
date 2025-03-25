@@ -60,13 +60,14 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
       """
     And file "server-only/ssr-client.ts" reads as:
       """typescript
-      import { SsrClient } from '@cojajs/coja';
+      import { Client, DirectClientRuntimeLink } from '@cojajs/coja';
       import { runtime } from './runtime';
       import type bff from '../bff'; 
       
-      export const ssrClient = SsrClient.create<typeof bff>({
-        runtime,
-        requestContext: null,
+      const link = new DirectClientRuntimeLink({ runtime, requestContext: null });
+      
+      export const ssrClient = Client.create<typeof bff>({
+        clientRuntimeLink: link,
         bffId: 'example-bff-id'
       });
       """

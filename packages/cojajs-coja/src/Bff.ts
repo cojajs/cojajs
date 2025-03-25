@@ -46,7 +46,7 @@ export type ClientifiedRpcOf<BffInstance extends Bff> =
 			? {
 					[K in keyof RpcOf<BffInstance>]: ClientifiedRpcOf<
 						// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-						Bff<RpcOf<BffInstance>[K], any>
+						Bff<any, RpcOf<BffInstance>[K], any>
 					>;
 				}
 			: RpcOf<BffInstance>;

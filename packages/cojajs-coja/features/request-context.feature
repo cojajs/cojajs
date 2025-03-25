@@ -6,7 +6,7 @@ Coja provides a `RequestContext` class to help you manage this information.
   Scenario: Request Context
     Given file "requestContext.ts" reads as:
       """typescript
-      import { RequestContext } from '@cojajs/coja';
+      import { RequestContext } from '@cojajs/coja/server';
       
       type ContextType = {
         username: string;
@@ -48,13 +48,14 @@ Coja provides a `RequestContext` class to help you manage this information.
       """
     And file "server-only/ssr-client.ts" reads as:
       """typescript
-      import { SsrClient } from '@cojajs/coja';
+      import { Client, DirectClientRuntimeLink } from '@cojajs/coja';
       import { runtime } from './runtime';
       import type bff from '../bff';
       
-      export const ssrClient = SsrClient.create<typeof bff>({
-        runtime,
-        requestContext: { username: 'world' },
+      const link = new DirectClientRuntimeLink({ runtime, requestContext: { username: 'world' } });
+      
+      export const ssrClient = Client.create<typeof bff>({
+        clientRuntimeLink: link,
         bffId: 'example-bff-id'
       });
       """

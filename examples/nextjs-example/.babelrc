@@ -1,0 +1,15 @@
+{
+	"presets": [
+		[
+			"@babel/preset-typescript",
+			{
+				"allowDeclareFields": true,
+				"allowNamespaces": true,
+				"allExtensions": true,
+				"isTSX": true
+			}
+		],
+		["@babel/preset-react", { "runtime": "automatic", "development": true }]
+	],
+	"plugins": [["@babel/plugin-proposal-decorators", { "version": "2023-05" }]]
+}

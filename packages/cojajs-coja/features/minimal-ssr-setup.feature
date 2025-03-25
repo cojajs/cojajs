@@ -14,29 +14,38 @@ Feature: Minimal SSR Setup
     And file "server-only/runtime.ts" reads as:
       """typescript
       import { Runtime, type BffFetcher } from '@cojajs/coja';
-      import bff from '../bff';
       
-      const bffMap = {
-        'example-bff-id': bff,
-      };
+      class MyBffFetcher implements BffFetcher {
+        private cache = new Map();
       
-      class OurBffFetcher implements BffFetcher {
-        fetch(bffId) {
-          return bffMap[bffId] ?? null;
+        private static bffMap = {
+          'example-bff-id': () => import('../bff').then(x => x.default),
+        }
+        
+        async fetch(bffId) {
+          if (!this.cache.has(bffId)) {
+            const bff = MyBffFetcher.bffMap[bffId]?.();
+            if (bff) {
+              this.cache.set(bffId, bff);
+            }
+          }
+      
+          return this.cache.get(bffId) ?? null;
         }
       }
       
-      export const runtime = new Runtime({ bffFetcher: new OurBffFetcher() });
+      export const runtime = new Runtime({ bffFetcher: new MyBffFetcher() });
       """
     And file "server-only/ssr-client.ts" reads as:
       """typescript
-      import { SsrClient } from '@cojajs/coja';
+      import { Client, DirectClientRuntimeLink } from '@cojajs/coja';
       import { runtime } from './runtime';
       import type bff from '../bff'; 
       
-      export const ssrClient = SsrClient.create<typeof bff>({
-        runtime,
-        requestContext: null,
+      const link = new DirectClientRuntimeLink({ runtime, requestContext: null });
+      
+      export const ssrClient = Client.create<typeof bff>({
+        clientRuntimeLink: link,
         bffId: 'example-bff-id'
       });
       """

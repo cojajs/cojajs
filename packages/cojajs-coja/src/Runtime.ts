@@ -1,6 +1,8 @@
 import type { Bff } from "./Bff";
 import type { BffFetcher } from "./BffFetcher";
 import type { CojaRequest } from "./CojaRequest";
+import { CojaResponse } from "./CojaResponse";
+import type { Json } from "./Json";
 
 export class Runtime<RequestContext> {
 	private readonly bffFetcher: BffFetcher;
@@ -12,22 +14,55 @@ export class Runtime<RequestContext> {
 	async execute(
 		request: CojaRequest,
 		requestContextValue: RequestContext,
-	): Promise<unknown> {
-		const topLevelBff = await this.bffFetcher.fetch(request.bffId);
-		this.assertBff(request.bffId, topLevelBff);
+	): Promise<Response> {
+		try {
+			const topLevelBff = await this.bffFetcher.fetch(request.bffId);
 
-		const requestedBff = this.resolveGuestPath(topLevelBff, request.guestPath);
-		this.assertBff(this.stringifyGuestPath(request), requestedBff);
+			this.assertBff(request.bffId, topLevelBff);
 
-		const bffFunction = this.getBffFunction(requestedBff, request);
+			const requestedBff = this.resolveGuestPath(
+				topLevelBff,
+				request.guestPath,
+			);
 
-		const requestContext = requestedBff.requestContext;
+			this.assertBff(this.stringifyGuestPath(request), requestedBff);
 
-		return requestContext
-			? requestContext.run(requestContextValue, () =>
-					bffFunction(...request.args),
-				)
-			: bffFunction(...request.args);
+			const bffFunction = this.getBffFunction(requestedBff, request);
+
+			const requestContext = requestedBff.requestContext;
+
+			const cojaResponse = await (requestContext
+				? requestContext.run(requestContextValue, () =>
+						bffFunction(...request.args),
+					)
+				: bffFunction(...request.args));
+
+			if (cojaResponse instanceof Response) {
+				return cojaResponse;
+			}
+
+			if (cojaResponse instanceof Error) {
+				return this.responseFromError(cojaResponse);
+			}
+
+			return new Response(JSON.stringify({ data: cojaResponse }), {
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			});
+		} catch (error) {
+			if (error instanceof Error) {
+				return this.responseFromError(error);
+			}
+
+			return this.responseFromError(new Error("Unknown error"));
+		}
+	}
+
+	private responseFromError(error: Error): Response {
+		return new Response(JSON.stringify({ error: { message: error.message } }), {
+			status: 500,
+			headers: { "Content-Type": "application/json" },
+		});
 	}
 
 	private stringifyGuestPath(request: CojaRequest): string {

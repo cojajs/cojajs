@@ -1,19 +1,26 @@
 import { Bff } from "./Bff.js";
+import { Client } from "./Client.js";
+import { CojaRequest } from "./CojaRequest.js";
+import { DirectClientRuntimeLink } from "./DirectClientRuntimeLink.js";
+import { HttpClientRuntimeLink } from "./HttpClientRuntimeLink.js";
 import { Runtime } from "./Runtime.js";
-import { SsrClient } from "./SsrClient.js";
-import { RequestContext } from "./RequestContext.js";
 
 export { Bff } from "./Bff.js";
 export { Runtime } from "./Runtime.js";
-export { SsrClient } from "./SsrClient.js";
-export { RequestContext } from "./RequestContext.js";
+export { Client } from "./Client.js";
+export { DirectClientRuntimeLink } from "./DirectClientRuntimeLink.js";
+export { HttpClientRuntimeLink } from "./HttpClientRuntimeLink.js";
+export { CojaRequest } from "./CojaRequest.js";
 
 export type { BffFetcher } from "./BffFetcher.js";
-export type { Client } from "./Client.js";
+export type { CojaResponse } from "./CojaResponse.js";
+export type { ClientRuntimeLink } from "./ClientRuntimeLink.js";
 
 export default {
 	Bff,
 	Runtime,
-	SsrClient,
-	RequestContext,
+	Client,
+	DirectClientRuntimeLink,
+	HttpClientRuntimeLink,
+	CojaRequest,
 };

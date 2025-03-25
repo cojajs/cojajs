@@ -9,4 +9,11 @@ export const createRpcProxy = (
 		apply(_, __, args) {
 			return onApply(path, args);
 		},
+		has: () => true,
+		set: () => {
+			throw new Error("Coja.Client is readonly");
+		},
+		deleteProperty: () => {
+			throw new Error("Coja.Client is readonly");
+		},
 	});

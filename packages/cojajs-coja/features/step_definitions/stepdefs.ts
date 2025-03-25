@@ -1,4 +1,4 @@
-import assert from "node:assert";
+import assert from "assert";
 import { Before, type DataTable, Given, Then, When } from "@cucumber/cucumber";
 import type { Lab } from "../support/Lab.js";
 
@@ -21,7 +21,7 @@ Given(
 );
 
 When("command {string} runs", function (this: Lab, command: string) {
-	this.runCommand(command.replace("node ", "ts-node "));
+	this.runCommand(command.replace("node ", "tsx "));
 });
 
 Then(

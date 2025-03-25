@@ -1,6 +1,6 @@
-import child_process from "node:child_process";
-import fs from "node:fs";
-import path from "node:path";
+import child_process from "child_process";
+import fs from "fs";
+import path from "path";
 
 export class ScenarioPackage {
 	constructor(private scenarioPackageDir: string) {}
@@ -21,6 +21,10 @@ export class ScenarioPackage {
 					devDependencies: {
 						"@cojajs/coja": `file:${pilotTarballPath}`,
 						typescript: "5.8.2",
+						"@types/node": "22.13.13",
+						express: "4.21.2",
+						"@types/express": "4.17.21",
+						tsx: "4.19.3",
 					},
 				},
 				null,
@@ -41,6 +45,7 @@ export class ScenarioPackage {
 			path.join(this.scenarioPackageDir, "tsconfig.json"),
 			JSON.stringify({
 				compilerOptions: {
+					esModuleInterop: true,
 					lib: ["dom", "es2015"],
 				},
 			}),

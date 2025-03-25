@@ -30,6 +30,7 @@
 		"@zoboz/core": "^4.1.2",
 		"tmp": "^0.2.3",
 		"ts-node": "^10.9.2",
+		"tsx": "^4.19.3",
 		"typescript": "^5.8.2"
 	},
 	"main": "./dist/cjs/index.js",
@@ -40,6 +41,11 @@
 			"types": "./dist/dts/index.d.ts",
 			"require": "./dist/cjs/index.js",
 			"import": "./dist/esm/index.js"
+		},
+		"./server": {
+			"types": "./dist/dts/server.d.ts",
+			"require": "./dist/cjs/server.js",
+			"import": "./dist/esm/server.js"
 		}
 	}
 }

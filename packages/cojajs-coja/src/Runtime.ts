@@ -1,10 +1,8 @@
 import type { Bff } from "./Bff";
 import type { BffFetcher } from "./BffFetcher";
 import type { CojaRequest } from "./CojaRequest";
-import { CojaResponse } from "./CojaResponse";
-import type { Json } from "./Json";
 
-export class Runtime<RequestContext> {
+export class Runtime<RequestContextValue> {
 	private readonly bffFetcher: BffFetcher;
 
 	constructor(options: { bffFetcher: BffFetcher }) {
@@ -13,7 +11,7 @@ export class Runtime<RequestContext> {
 
 	async execute(
 		request: CojaRequest,
-		requestContextValue: RequestContext,
+		requestContextValue: RequestContextValue,
 	): Promise<Response> {
 		try {
 			const topLevelBff = await this.bffFetcher.fetch(request.bffId);

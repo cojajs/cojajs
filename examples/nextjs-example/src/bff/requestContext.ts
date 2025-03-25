@@ -1,6 +1,6 @@
 import { RequestContext } from "@cojajs/coja/server";
 
-type ContextType = {
+export type RequestContextValue = {
 	auth?: {
 		agentId: string;
 		permissions: string[];
@@ -8,4 +8,4 @@ type ContextType = {
 	logForCustomer?: string;
 };
 
-export const requestContext = new RequestContext<ContextType>();
+export const requestContext = new RequestContext<RequestContextValue>();

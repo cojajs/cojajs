@@ -1,4 +1,5 @@
 import { type Bff, type BffFetcher, Runtime } from "@cojajs/coja";
+import type { RequestContextValue } from "./requestContext";
 
 class MyBffFetcher implements BffFetcher {
 	private cache = new Map();
@@ -19,4 +20,6 @@ class MyBffFetcher implements BffFetcher {
 	}
 }
 
-export const runtime = new Runtime({ bffFetcher: new MyBffFetcher() });
+export const runtime = new Runtime<RequestContextValue>({
+	bffFetcher: new MyBffFetcher(),
+});

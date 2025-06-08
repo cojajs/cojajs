@@ -8,6 +8,5 @@ export default new BuildConfig({
 	distDir: "./dist",
 	exports: {
 		".": "./src/index.ts",
-		"./server": "./src/server.ts",
 	},
 });

@@ -1,4 +1,4 @@
-import { RequestContext } from "@cojajs/coja/server";
+import { RequestContext } from "@cojajs/coja";
 
 export type RequestContextValue = {
 	auth?: {
@@ -9,3 +9,4 @@ export type RequestContextValue = {
 };
 
 export const requestContext = new RequestContext<RequestContextValue>();
+export const useRequestContext = () => requestContext.use();

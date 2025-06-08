@@ -6,26 +6,32 @@ Coja provides a `RequestContext` class to help you manage this information.
   Scenario: Request Context
     Given file "requestContext.ts" reads as:
       """typescript
-      import { RequestContext } from '@cojajs/coja/server';
+      import { RequestContext } from '@cojajs/coja';
       
       type ContextType = {
         username: string;
       };
       
       export const requestContext = new RequestContext<ContextType>();
+      export const useRequestContext = () => requestContext.use();
+      """
+    And file 'greet.ts' reads as:
+      """typescript
+      import { useRequestContext } from './requestContext';
+
+      export function greet({ greeter }: { greeter: string }) {
+        const { username } = useRequestContext();
+        return `"hi", ${greeter} said to ${username}!`;
+      };
       """
     And file "bff.ts" reads as:
       """typescript
       import { Bff } from '@cojajs/coja';
-      import { requestContext } from './requestContext';
+      import { requestContext, useRequestContext } from './requestContext';
+      import { greet } from './greet';
       
       export default new Bff({
-        rpc: {
-          greet({ greeter }: { greeter: string }) {
-            const { username } = requestContext.useValue();
-            return `"hi", ${greeter} said to ${username}!`;
-          },
-        },
+        rpc: { greet },
         requestContext,
       });
       """

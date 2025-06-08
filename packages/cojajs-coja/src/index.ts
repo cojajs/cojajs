@@ -7,3 +7,4 @@ export { CojaRequest } from "./CojaRequest.js";
 export type { ClientRuntimeLink } from "./ClientRuntimeLink.js";
 export { Client } from "./Client.js";
 export { HttpClientRuntimeLink } from "./HttpClientRuntimeLink.js";
+export { RequestContext } from "./RequestContext.js";

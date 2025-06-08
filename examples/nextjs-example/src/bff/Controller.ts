@@ -1,8 +1,8 @@
-import { requestContext } from "./requestContext";
+import { useRequestContext } from "./requestContext";
 
 export abstract class Controller {
 	protected useRequestContext() {
-		const value = requestContext.useValue();
+		const value = useRequestContext();
 
 		if (!value) {
 			throw new Error("No request context found");

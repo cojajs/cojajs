@@ -1,8 +1,6 @@
-import type { Bff, RequestContextTypeOf } from "./Bff";
 import type { ClientRuntimeLink } from "./ClientRuntimeLink";
 import type { CojaRequest } from "./CojaRequest";
 import { CojaResponse } from "./CojaResponse";
-import type { Runtime } from "./Runtime";
 
 export class HttpClientRuntimeLink implements ClientRuntimeLink {
 	private readonly endpointUrl: string;

@@ -18,10 +18,7 @@ export class Runtime<RequestContextValue> {
 
 			this.assertBff(request.bffId, topLevelBff);
 
-			const requestedBff = this.resolveGuestPath(
-				topLevelBff,
-				request.guestPath,
-			);
+			const requestedBff = this.resolveGuestBff(topLevelBff, request.guestPath);
 
 			this.assertBff(this.stringifyGuestPath(request), requestedBff);
 
@@ -69,19 +66,23 @@ export class Runtime<RequestContextValue> {
 		);
 	}
 
-	private resolveGuestPath(bff: Bff, guestPath: string[]): Bff {
-		let step = bff;
-		for (const segment of guestPath) {
-			step = step.guests[segment];
+	private resolveGuestBff(bff: Bff, guestPath: string[]): Bff {
+		let currentBff: Bff | null | undefined = bff;
+		const pathTaken: string[] = [];
 
-			if (step === null) {
+		for (const segment of guestPath) {
+			currentBff = currentBff.guests[segment];
+			pathTaken.push(segment);
+
+			if (currentBff == null) {
+				const got = currentBff === null ? "null" : "undefined";
 				throw new Error(
-					`[bad-request] Expected object at path ${guestPath.join(".")}, but got null.`,
+					`[bad-request] Expected object at path "${pathTaken.join(".")}", but got ${got}.`,
 				);
 			}
 		}
 
-		return step;
+		return currentBff;
 	}
 
 	private assertBff(bffId: string, bff: unknown): asserts bff is Bff {

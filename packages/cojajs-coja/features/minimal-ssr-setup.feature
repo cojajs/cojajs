@@ -5,7 +5,7 @@ Feature: Minimal SSR Setup
       """typescript
       import { Bff } from '@cojajs/coja';
       
-      export default new Bff({
+      export const bff = new Bff({
         rpc: {
           math: { twoPlusTwo: () => 4 },
         },
@@ -19,7 +19,7 @@ Feature: Minimal SSR Setup
         private cache = new Map();
       
         private static bffMap = {
-          'example-bff-id': () => import('../bff').then(x => x.default),
+          'example-bff-id': () => import('../bff').then(x => x.bff),
         }
         
         async fetch(bffId) {
@@ -40,7 +40,7 @@ Feature: Minimal SSR Setup
       """typescript
       import { Client, DirectClientRuntimeLink } from '@cojajs/coja';
       import { runtime } from './runtime';
-      import type bff from '../bff'; 
+      import type { bff } from '../bff'; 
       
       const link = new DirectClientRuntimeLink({ runtime, requestContext: null });
       

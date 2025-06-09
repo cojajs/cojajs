@@ -30,7 +30,7 @@ Coja provides a `RequestContext` class to help you manage this information.
       import { requestContext, useRequestContext } from './requestContext';
       import { greet } from './greet';
       
-      export default new Bff({
+      export const bff = new Bff({
         rpc: { greet },
         requestContext,
       });
@@ -38,7 +38,7 @@ Coja provides a `RequestContext` class to help you manage this information.
     And file "server-only/runtime.ts" reads as:
       """typescript
       import { Runtime, type BffFetcher } from '@cojajs/coja';
-      import bff from '../bff';
+      import { bff } from '../bff';
       
       const bffMap = {
         'example-bff-id': bff,
@@ -56,7 +56,7 @@ Coja provides a `RequestContext` class to help you manage this information.
       """typescript
       import { Client, DirectClientRuntimeLink } from '@cojajs/coja';
       import { runtime } from './runtime';
-      import type bff from '../bff';
+      import type { bff } from '../bff';
       
       const link = new DirectClientRuntimeLink({ runtime, requestContext: { username: 'world' } });
       

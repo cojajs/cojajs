@@ -5,7 +5,7 @@ Feature: Minimal CSR Setup
       """typescript
       import { Bff } from '@cojajs/coja';
       
-      export default new Bff({
+      export const bff = new Bff({
         rpc: {
           math: { twoPlusTwo: () => 4 },
         },
@@ -14,7 +14,7 @@ Feature: Minimal CSR Setup
     And file "bff/http-client.ts" reads as:
       """typescript
       import { Client, HttpClientRuntimeLink } from '@cojajs/coja';
-      import type bff from './bff'; 
+      import type { bff } from './bff'; 
       
       const link = new HttpClientRuntimeLink({ endpointUrl: 'http://localhost:3000/coja' });
       
@@ -31,7 +31,7 @@ Feature: Minimal CSR Setup
         private cache = new Map();
       
         private static bffMap = {
-          'example-bff-id': () => import('../bff/bff.js').then(x => x.default),
+          'example-bff-id': () => import('../bff/bff.js').then(x => x.bff),
         }
         
         async fetch(bffId) {

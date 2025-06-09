@@ -6,7 +6,7 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
       """typescript
       import { Bff } from '@cojajs/coja';
       
-      export default new Bff({
+      export const bff = new Bff({
         rpc: {
           kilo(number) {
             return number * 1000;
@@ -17,7 +17,7 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
     And file "assume-external-called-si/app.ts" reads as:
       """typescript
       import type { Client } from '@cojajs/coja';
-      import type bff from './bff';
+      import type { bff } from './bff';
       
       type Props = {
         client: Client<typeof bff>;
@@ -30,9 +30,9 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
     And file "bff.ts" reads as:
       """typescript
       import { Bff } from '@cojajs/coja';
-      import si from './assume-external-called-si/bff';
+      import { bff as si } from './assume-external-called-si/bff';
       
-      export default new Bff({
+      export const bff = new Bff({
         rpc: {
           math: { twoPlusTwo: () => 4 },
         },
@@ -44,7 +44,7 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
     And file "server-only/runtime.ts" reads as:
       """typescript
       import { Runtime, type BffFetcher } from '@cojajs/coja';
-      import bff from '../bff';
+      import { bff } from '../bff';
       
       const bffMap = {
         'example-bff-id': bff,
@@ -62,7 +62,7 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
       """typescript
       import { Client, DirectClientRuntimeLink } from '@cojajs/coja';
       import { runtime } from './runtime';
-      import type bff from '../bff'; 
+      import type { bff } from '../bff'; 
       
       const link = new DirectClientRuntimeLink({ runtime, requestContext: null });
       
@@ -99,7 +99,7 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
       """typescript
       import { Bff } from '@cojajs/coja';
       
-      export default new Bff({
+      export const bff = new Bff({
         rpc: {
           kilo(number) {
             return number * 1000;
@@ -110,9 +110,9 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
     And file "bff.ts" reads as:
       """typescript
       import { Bff } from '@cojajs/coja';
-      import si from './assume-external-called-si/bff';
+      import { bff as si } from './assume-external-called-si/bff';
       
-      export default new Bff({
+      export const bff = new Bff({
         rpc: {
           math: { twoPlusTwo: () => 4 },
         },
@@ -124,7 +124,7 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
     And file "server-only/runtime.ts" reads as:
       """typescript
       import { Runtime, type BffFetcher } from '@cojajs/coja';
-      import bff from '../bff';
+      import { bff } from '../bff';
       
       const bffMap = {
         'example-bff-id': bff,
@@ -142,7 +142,7 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
       """typescript
       import { Client, DirectClientRuntimeLink } from '@cojajs/coja';
       import { runtime } from './runtime';
-      import type bff from '../bff'; 
+      import type { bff } from '../bff'; 
       
       const link = new DirectClientRuntimeLink({ runtime, requestContext: null });
       
@@ -183,7 +183,7 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
       """typescript
       import { Bff } from '@cojajs/coja';
       
-      export default new Bff({
+      export const bff = new Bff({
         rpc: {
           level1Function() {
             return 'level1';
@@ -197,9 +197,9 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
     And file "bff.ts" reads as:
       """typescript
       import { Bff } from '@cojajs/coja';
-      import level1 from './level1-bff/bff';
+      import { bff as level1 } from './level1-bff/bff';
       
-      export default new Bff({
+      export const bff = new Bff({
         rpc: {
           rootFunction: () => 'root',
         },
@@ -211,7 +211,7 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
     And file "server-only/runtime.ts" reads as:
       """typescript
       import { Runtime, type BffFetcher } from '@cojajs/coja';
-      import bff from '../bff';
+      import { bff } from '../bff';
       
       const bffMap = {
         'example-bff-id': bff,
@@ -229,7 +229,7 @@ A Bff can host other Bffs and provide them to clients, enabling reusable full-st
       """typescript
       import { Client, DirectClientRuntimeLink } from '@cojajs/coja';
       import { runtime } from './runtime';
-      import type bff from '../bff'; 
+      import type { bff } from '../bff'; 
       
       const link = new DirectClientRuntimeLink({ runtime, requestContext: null });
       

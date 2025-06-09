@@ -5,7 +5,7 @@ class MyBffFetcher implements BffFetcher {
 	private cache = new Map();
 
 	private static bffMap: Record<string, () => Promise<Bff>> = {
-		"nextjs-example": () => import("./bff").then((x) => x.default),
+		"nextjs-example": () => import("./bff").then((x) => x.bff),
 	};
 
 	async fetch(bffId: string) {
